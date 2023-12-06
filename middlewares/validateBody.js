@@ -4,7 +4,8 @@ const validateBody = (schema) => {
   const func = (req, res, next) => {
     const { error } = schema.validate(req.body);
     if (error) {
-      next(HttpError(400, error.message));
+      console.log(req.body);
+      next(HttpError(400, "missed required email or password field"));
     }
     next();
   };
