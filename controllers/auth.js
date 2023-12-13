@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs/promises");
+const Jimp = require("jimp");
 
 const { User } = require("../models/user");
 
@@ -78,13 +79,23 @@ const logout = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   const { _id } = req.user;
+  if (!req.file) {
+    throw HttpError(400, "the file is missing");
+  }
   const { path: tempUpload, originalname } = req.file;
 
-  const resultUpload = path.join(avatarsDir, originalname);
-  await fs.rename(tempUpload, resultUpload);
+  const filename = `${_id}_${originalname}`;
 
-  const avatarURL = path.join("avatars", originalname);
+  const resultUpload = path.join(avatarsDir, filename);
+
+  const avatarURL = path.join("avatars", filename);
+  await fs.rename(tempUpload, resultUpload);
   await User.findByIdAndUpdate(_id, { avatarURL });
+
+  Jimp.read(`${avatarsDir}/${filename}`, (err, fileAvatar) => {
+    if (err) throw err;
+    fileAvatar.cover(250, 250).write(`${avatarsDir}/${filename}`);
+  });
 
   res.json({ avatarURL });
 };
