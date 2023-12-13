@@ -14,7 +14,7 @@ router.post(
   ctrl.register
 );
 
-// signin
+// signIn
 
 router.post("/login", validateBody(authSchemas.loginSchema), ctrl.login);
 
