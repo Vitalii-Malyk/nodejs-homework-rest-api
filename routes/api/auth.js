@@ -13,6 +13,12 @@ router.post(
   validateBody(authSchemas.registerSchema),
   ctrl.register
 );
+router.get("/verify/:verificationToken", ctrl.verifyEmail);
+router.post(
+  "/verify",
+  validateBody(authSchemas.emailSchema),
+  ctrl.resendVerifyEmail
+);
 
 // signIn
 
@@ -28,7 +34,5 @@ router.patch(
   upload.single("avatar"),
   ctrl.updateAvatar
 );
-
-router.get("/verify/:verificationToken", authenticate, ctrl);
 
 module.exports = router;
